@@ -1,6 +1,5 @@
 # GPRS WHID
-This project was inspired by [whid-injector/whid-31337](https://github.com/whid-injector/whid-31337)
-
+This project is a fork of the whid elite. 
 It extend the inital attack by integrating GPRS connection to it.  
 This attack was designed to run on a modified version of the whid Elite with an Atmel Samd instead of an Atmel mega 32U4. 
 ## Hardware
@@ -12,7 +11,7 @@ This project provide various attacks each in a different folder:
 - The ``testserial`` firmware can be used to check the serial connection between the whid and a computer.
 - The ``reverseshell-qwerty`` will establish a complete reverse shell between the target and the attacker. It will connect to the hardcoded ip provided in the code and write a payload on the target. 
 - The ``reverseshell-AZERTY`` does the same thing but with an  AZERTY target. 
-- Inside ``Server`` it is work in progress for the server side of the TCP TUnnel 
+- Inside ``TCP`` we can find an attack were the WHID setup a TCP connection beetween the localhost:4445 of the target and the server of the attacker. The attacker can add his payload inside th firmware and use this canala s a regular TCP connection
 
 
 
