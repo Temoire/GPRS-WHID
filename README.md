@@ -1,5 +1,6 @@
 # GPRS WHID
-This project is a fork of the whid elite. 
+This project was inspired by [whid-injector/whid-31337](https://github.com/whid-injector/whid-31337)
+
 It extend the inital attack by integrating GPRS connection to it.  
 This attack was designed to run on a modified version of the whid Elite with an Atmel Samd instead of an Atmel mega 32U4. 
 ## Hardware
