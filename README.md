@@ -11,7 +11,7 @@ This project provide various attacks each in a different folder:
 - The ``testserial`` firmware can be used to check the serial connection between the whid and a computer.
 - The ``reverseshell-qwerty`` will establish a complete reverse shell between the target and the attacker. It will connect to the hardcoded ip provided in the code and write a payload on the target. 
 - The ``reverseshell-AZERTY`` does the same thing but with an  AZERTY target. 
-- Inside ``TCP`` we can find an attack were the WHID setup a TCP connection beetween the localhost:4445 of the target and the server of the attacker. The attacker can add his payload inside th firmware and use this canala s a regular TCP connection
+- Inside ``TCPtunnel`` we can find an attack were the WHID setup a TCP connection beetween the localhost:2050 of the target and the server of the attacker. The attacker can add his payload inside th firmware and use this canala s a regular TCP connection
 
 
 
