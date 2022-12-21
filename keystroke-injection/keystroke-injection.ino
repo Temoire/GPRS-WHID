@@ -35,7 +35,6 @@ void setup()
     if(i==0) break;
     delay(500);
   }
-    Serial.println(F("WHID Elite 1.3.1 is OK")); 
   fona.sendCheckReply(F("AT+CIPMODE=1"),F("OK"),100);
 
   fona.setGPRSNetworkSettings(F("orange"), F("orange"), F("orange"));//configuration de l'APN (nom, utilisateur, mot de passe)
