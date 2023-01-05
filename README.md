@@ -25,7 +25,12 @@ Except ``reverseshell-AZERTY``, every firmwares are designed to work with a qwer
 - Keyboard Library
 - Adafruit Fona Library 
 
-On th .ino file, you will need to add your public IP address and the port your are listenning on: 
+On the .ino file, you will need to configure your APN which is specific to your sim Card: 
+```CPP
+  fona.setGPRSNetworkSettings(F("name"), F("user"), F("password"));
+  //APN configuration (name, user, password)
+```
+You will also need to add your public IP address and the port your are listenning on: 
 ```CPP
 if(!fona.sendCheckReply("AT+CIPSTART=\"TCP\",\"IPV4 Adress\",\"PORT\"",F("OK"),100))
 ```
